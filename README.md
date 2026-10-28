@@ -1,3 +1,14 @@
+---
+AIGC:
+    Label: "1"
+    ContentProducer: 001191440300708461136T1XGW3
+    ProduceID: d80f7d114115af5f21aec47fe9775375_fed96b52d2b211f1992e525400638852
+    ReservedCode1: mVpWXHxN8g1P6pXxh59wKsmpfumVXUE9ny2hwCf06fW1aMIcpMOYmRCeqaPGDkDZyvvF/8lz4i/4jPTNHARzOT0RbqckpeGVvF4NfLrkgFHJC2qAdpoCFKcROMCR1+JpiGH7rubWiN2iZbfUZF8sEPKKuw4ZleCbVI0ezmlpLouLNgeTAF38VP5t4wg=
+    ContentPropagator: 001191440300708461136T1XGW3
+    PropagateID: d80f7d114115af5f21aec47fe9775375_fed96b52d2b211f1992e525400638852
+    ReservedCode2: mVpWXHxN8g1P6pXxh59wKsmpfumVXUE9ny2hwCf06fW1aMIcpMOYmRCeqaPGDkDZyvvF/8lz4i/4jPTNHARzOT0RbqckpeGVvF4NfLrkgFHJC2qAdpoCFKcROMCR1+JpiGH7rubWiN2iZbfUZF8sEPKKuw4ZleCbVI0ezmlpLouLNgeTAF38VP5t4wg=
+---
+
 # Generate-Music-Timeline
 
 纯本地部署的歌曲生成 + 歌词时间戳工具套件（Windows / NVIDIA）。整合 YuE2 歌曲母版生成、Seed-VC 参考音色换声、VoxCPM / SongBloom 备用合成通道、母版音色培育、MVGR 歌词时间戳精对齐，全部本地运行，无需联网。
@@ -89,3 +100,4 @@ Generate-Music-Timeline/
 - 本项目为个人本地工具，代码按现状提供，不承诺任何效果与稳定性
 - 生成内容含 AI 合成成分，请遵守当地法律法规与平台规则，勿用于侵权用途
 - 第三方组件（YuE2、Seed-VC、VoxCPM、Qwen3-TTS、demucs 等）版权归其各自作者所有，分发时请遵守对应开源协议
+*（内容由AI生成，仅供参考）*
