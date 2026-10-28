@@ -1,0 +1,24 @@
+# ---- 大体积依赖 / 模型 / 运行时（不进入仓库，需自行准备） ----
+deps/
+models/
+hf_cache/
+runtime_py310/
+venv_timeline/
+venv_voxcpm/
+venv_songbloom/
+
+# ---- 生成产物与日志 ----
+outputs/
+output/
+logs/
+temp/
+err.txt
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# ---- 本地备份文件（历史修订备份不入库） ----
+*.bak*

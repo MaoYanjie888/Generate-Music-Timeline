@@ -1,0 +1,45 @@
+# 奇幻风格预设 - Fantasy Style Preset
+# 适用于奇幻、魔法、史诗风格的 MV
+
+style_name: "奇幻/Fantasy"
+description: "奇幻风格画面，适合古风、神话、史诗、电子音等曲风"
+
+positive_prompt: >
+  fantasy art, digital painting, epic, chinese mythology atmosphere,
+  detailed fantasy illustration, concept art,
+  trending on artstation, cgsociety, masterpiece,
+  cinematic lighting, misty atmosphere
+
+negative_prompt: >
+  photorealistic, modern, urban, technology, cars,
+  low quality, blurry, distorted, deformed,
+  bad anatomy, watermark, text, signature, nsfw,
+  photograph, realistic
+
+motion_params:
+  motion_scale: 1.0
+  num_frames: 32
+  num_inference_steps: 28
+  guidance_scale: 7.5
+  width: 768
+  height: 512
+
+controlnet_params:
+  depth_strength: 0.5
+  pose_strength: 0.3
+  canny_strength: 0.3
+
+recommended_checkpoint:
+  name: "andite/anything-v4.0"
+  clip_skip: 2
+  scheduler: "euler_a"
+
+lyric_mapping:
+  default_prefix: "fantasy scene of"
+  default_suffix: "epic fantasy concept art"
+  mood_keywords:
+    happy: ["magical celebration", "floating lanterns", "enchanted garden", "sparkling"]
+    sad: ["ancient ruins", "moonlit forest", "ghostly", "melancholic magic"]
+    romantic: ["starlit castle", "dragon flight", "floating islands", "ethereal love"]
+    energetic: ["epic battle", "magic duel", "firestorm", "elemental clash"]
+    calm: ["ancient library", "fairy glade", "crystal cave", "quiet magic"]

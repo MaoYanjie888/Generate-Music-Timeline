@@ -1,0 +1,130 @@
+{
+  "song_title": "星空下的约定",
+  "artist": "示例歌手",
+  "duration_seconds": 180,
+  "bpm": 120,
+  "style_preset": "cinematic",
+  "segments": [
+    {
+      "id": "seg_01",
+      "start_time": 0.0,
+      "end_time": 15.0,
+      "type": "animation",
+      "description": "前奏 - 星空画面",
+      "prompt_override": "starry night sky, milky way galaxy, vast universe, slow pan, cinematic",
+      "controlnet_type": "none",
+      "transition_in": "fade_in",
+      "transition_out": "crossfade"
+    },
+    {
+      "id": "seg_02",
+      "start_time": 15.0,
+      "end_time": 30.0,
+      "type": "portrait",
+      "description": "A段 - 歌手特写",
+      "angle": "front",
+      "lyrics": ["星光洒满了夜空", "我在这默默等候"],
+      "transition_in": "crossfade",
+      "transition_out": "crossfade"
+    },
+    {
+      "id": "seg_03",
+      "start_time": 30.0,
+      "end_time": 50.0,
+      "type": "animation",
+      "description": "A段场景 - 星空下的原野",
+      "prompt_override": "vast grassland under starry night, fireflies glowing, gentle breeze, cinematic wide shot",
+      "controlnet_type": "depth",
+      "transition_in": "crossfade",
+      "transition_out": "blur_transition"
+    },
+    {
+      "id": "seg_04",
+      "start_time": 50.0,
+      "end_time": 62.0,
+      "type": "portrait",
+      "description": "B段 - 45度角特写",
+      "angle": "45_degree",
+      "lyrics": ["你曾说过的每句话", "都刻在我心上"],
+      "transition_in": "blur_transition",
+      "transition_out": "hard_cut"
+    },
+    {
+      "id": "seg_05",
+      "start_time": 62.0,
+      "end_time": 85.0,
+      "type": "animation",
+      "description": "B段场景 - 流星划过",
+      "prompt_override": "shooting stars across night sky, meteor shower, cinematic, dramatic lighting",
+      "controlnet_type": "depth",
+      "transition_in": "hard_cut",
+      "transition_out": "crossfade"
+    },
+    {
+      "id": "seg_06",
+      "start_time": 85.0,
+      "end_time": 100.0,
+      "type": "portrait",
+      "description": "副歌 - 正面特写高潮",
+      "angle": "front",
+      "lyrics": ["星空下的约定", "永远不忘记", "就算时光飞逝", "我依然爱你"],
+      "transition_in": "crossfade",
+      "transition_out": "crossfade"
+    },
+    {
+      "id": "seg_07",
+      "start_time": 100.0,
+      "end_time": 120.0,
+      "type": "animation",
+      "description": "副歌场景 - 黎明破晓",
+      "prompt_override": "dawn breaking over mountains, golden sunrise, mist rising, epic cinematic drone shot",
+      "controlnet_type": "pose",
+      "transition_in": "crossfade",
+      "transition_out": "blur_transition"
+    },
+    {
+      "id": "seg_08",
+      "start_time": 120.0,
+      "end_time": 135.0,
+      "type": "portrait",
+      "description": "间奏 - 侧面特写",
+      "angle": "side",
+      "lyrics": [],
+      "transition_in": "blur_transition",
+      "transition_out": "crossfade"
+    },
+    {
+      "id": "seg_09",
+      "start_time": 135.0,
+      "end_time": 155.0,
+      "type": "animation",
+      "description": "桥段 - 银河漂流",
+      "prompt_override": "floating through galaxy, nebula clouds, cosmic dust, ethereal light, cinematic sci-fi",
+      "controlnet_type": "none",
+      "transition_in": "crossfade",
+      "transition_out": "hard_cut"
+    },
+    {
+      "id": "seg_10",
+      "start_time": 155.0,
+      "end_time": 170.0,
+      "type": "portrait",
+      "description": "尾声 - 正面特写",
+      "angle": "front",
+      "lyrics": ["星空下的我们", "永远在一起"],
+      "transition_in": "hard_cut",
+      "transition_out": "fade_out"
+    },
+    {
+      "id": "seg_11",
+      "start_time": 170.0,
+      "end_time": 180.0,
+      "type": "animation",
+      "description": "尾声 - 星空淡出",
+      "prompt_override": "fading stars at dawn, soft morning light, peaceful ending, cinematic",
+      "controlnet_type": "none",
+      "transition_in": "crossfade",
+      "transition_out": "fade_out"
+    }
+  ]
+}

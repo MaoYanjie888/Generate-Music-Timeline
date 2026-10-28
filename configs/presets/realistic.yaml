@@ -1,0 +1,45 @@
+# 写实风格预设 - Realistic Style Preset
+# 适用于真人歌手、现实场景风格的 MV
+
+style_name: "写实/Realistic"
+description: "真实感画面风格，适合流行、民谣、摇滚等曲风"
+
+positive_prompt: >
+  cinematic lighting, 8k, highly detailed, photorealistic,
+  professional photography, sharp focus, natural colors,
+  volumetric lighting, depth of field, atmospheric,
+  trending on artstation, masterpiece
+
+negative_prompt: >
+  cartoon, anime, illustration, painting, sketch,
+  low quality, blurry, distorted, deformed,
+  bad anatomy, watermark, text, signature, nsfw
+
+motion_params:
+  motion_scale: 0.8
+  num_frames: 32
+  num_inference_steps: 25
+  guidance_scale: 7.5
+  width: 768
+  height: 512
+
+controlnet_params:
+  depth_strength: 0.6
+  pose_strength: 0.5
+  canny_strength: 0.4
+
+recommended_checkpoint:
+  name: "SG161222/Realistic_Vision_V5.1_noVAE"
+  clip_skip: 1
+  scheduler: "euler_a"
+
+# 歌词→提示词映射模板（可自定义扩展）
+lyric_mapping:
+  default_prefix: "beautiful cinematic scene of"
+  default_suffix: "photorealistic 8k"
+  mood_keywords:
+    happy: ["sunny", "golden hour", "bright colors", "smiling"]
+    sad: ["rain", "overcast", "moody", "emotional", "tears"]
+    romantic: ["sunset", "candlelight", "intimate", "warm", "love"]
+    energetic: ["explosive", "dynamic", "motion blur", "action", "powerful"]
+    calm: ["peaceful", "serene", "gentle", "morning", "soft light"]

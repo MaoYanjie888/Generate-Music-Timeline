@@ -1,0 +1,44 @@
+# 二次元风格预设 - Anime Style Preset
+# 适用于动漫风格的 MV
+
+style_name: "二次元/Anime"
+description: "动漫风格画面，适合二次元歌曲、V家歌曲、动漫同人等"
+
+positive_prompt: >
+  anime style, masterpiece, best quality, highly detailed,
+  vibrant colors, cel shading, studio ghibli inspired,
+  beautiful background, clean lines, expressive, dynamic composition,
+  trending on pixiv, anime key visual
+
+negative_prompt: >
+  photorealistic, realistic, 3d, photograph,
+  low quality, bad anatomy, bad hands, extra fingers,
+  watermark, text, signature, nsfw, blurry, ugly
+
+motion_params:
+  motion_scale: 1.2
+  num_frames: 32
+  num_inference_steps: 30
+  guidance_scale: 8.0
+  width: 768
+  height: 512
+
+controlnet_params:
+  depth_strength: 0.5
+  pose_strength: 0.4
+  canny_strength: 0.3
+
+recommended_checkpoint:
+  name: "andite/anything-v4.0"
+  clip_skip: 2
+  scheduler: "ddim"
+
+lyric_mapping:
+  default_prefix: "anime scene of"
+  default_suffix: "anime art style"
+  mood_keywords:
+    happy: ["sparkling", "cherry blossoms", "bright day", "smiling"]
+    sad: ["rain", "cherry blossoms falling", "twilight", "lonely"]
+    romantic: ["starry sky", "fireworks", "school rooftop", "sunset"]
+    energetic: ["action scene", "speed lines", "dynamic angle", "dramatic"]
+    calm: ["quiet afternoon", "wind chime", "river bank", "sunbeam"]

@@ -1,0 +1,45 @@
+# 电影感风格预设 - Cinematic Style Preset
+# 适用于电影级别的画面风格，强调氛围感和叙事性
+
+style_name: "电影感/Cinematic"
+description: "电影感画面风格，适合叙事性强的歌曲，画面具有大片质感"
+
+positive_prompt: >
+  cinematic, film grain, anamorphic lens, 35mm,
+  cinematic color grading, dramatic lighting,
+  widescreen composition, professional cinematography,
+  movie still, epic scale, rich shadows,
+  ARRI Alexa, 8k, masterpiece
+
+negative_prompt: >
+  cartoon, anime, illustration, oversaturated,
+  low quality, blurry, distorted, deformed,
+  watermark, text, signature, nsfw, video game
+
+motion_params:
+  motion_scale: 0.6
+  num_frames: 32
+  num_inference_steps: 30
+  guidance_scale: 8.0
+  width: 768
+  height: 512
+
+controlnet_params:
+  depth_strength: 0.7
+  pose_strength: 0.5
+  canny_strength: 0.3
+
+recommended_checkpoint:
+  name: "SG161222/Realistic_Vision_V5.1_noVAE"
+  clip_skip: 1
+  scheduler: "dpm++_2m_karras"
+
+lyric_mapping:
+  default_prefix: "cinematic shot of"
+  default_suffix: "film grain cinematic lighting"
+  mood_keywords:
+    happy: ["warm sunset", "wide shot", "golden light", "triumph"]
+    sad: ["film noir", "blue hour", "fog", "solitary figure", "rainy street"]
+    romantic: ["magic hour", "silhouette", "dancing", "close embrace"]
+    energetic: ["explosion", "car chase", "epic battle", "hero shot"]
+    calm: ["meditative", "wide nature shot", "slow pan", "dawn light"]
