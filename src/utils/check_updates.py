@@ -6,7 +6,7 @@
 输出可读文本, 帮助判断哪些模型可能已发布新版本。
 
 远端来源:
-  - GitHub Releases: YuE (RVC-Boss/YuE), VoxCPM (PlayVoice/VoxCPM), Qwen3-TTS (QwenLM/Qwen3-TTS)
+  - GitHub Releases: YuE (RVC-Boss/YuE), Qwen3-TTS (QwenLM/Qwen3-TTS)
   - HuggingFace lastModified: Qwen3-ASR, Qwen3-ForcedAligner, Qwen3-TTS Base
 
 本机走 Clash 代理(127.0.0.1:7897), urllib 默认跟随系统代理; 若直连失败
@@ -25,7 +25,6 @@ LOCAL_PROXY = "http://127.0.0.1:7897"
 # 本地模型目录探测(存在即视为已安装, 记录安装时间)
 LOCAL_MODELS = {
     "YuE2 后端": PROJECT_ROOT / "deps",
-    "VoxCPM2": PROJECT_ROOT / "models" / "VoxCPM2",
     "Qwen3-TTS Base": Path(r"F:\ComfyUI\models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-Base"),
     "Qwen3-ASR-1.7B": PROJECT_ROOT / "models" / "Qwen3-ASR-1.7B-hf",
     "Qwen3-ForcedAligner-0.6B": PROJECT_ROOT / "models" / "Qwen3-ForcedAligner-0.6B-hf",
@@ -34,7 +33,6 @@ LOCAL_MODELS = {
 # 远端版本源
 GITHUB_REPOS = [
     ("YuE2 后端", "RVC-Boss/YuE"),
-    ("VoxCPM2", "PlayVoice/VoxCPM"),
     ("Qwen3-TTS", "QwenLM/Qwen3-TTS"),
 ]
 HF_MODELS = [
@@ -118,7 +116,7 @@ def run_check() -> str:
         except Exception as exc:
             lines.append(f"  {name}: 查询失败({type(exc).__name__})")
 
-    lines.append("\n提示: 一键包(YuE2/VoxCPM)本地版本以包内版本文件为准, 远端版本仅供对照;")
+    lines.append("\n提示: 一键包(YuE2)本地版本以包内版本文件为准, 远端版本仅供对照;")
     lines.append("      若远端明显更新可前往对应仓库 Release 页核对后手动更新。")
     return "\n".join(lines)
 

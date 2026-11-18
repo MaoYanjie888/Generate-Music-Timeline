@@ -11,60 +11,55 @@ AIGC:
 
 # Generate-Music-Timeline
 
-纯本地部署的歌曲生成 + 歌词时间戳工具套件（Windows / NVIDIA）。整合 YuE2 歌曲母版生成、Seed-VC 参考音色换声、VoxCPM / SongBloom 备用合成通道、母版音色培育、MVGR 歌词时间戳精对齐，全部本地运行，无需联网。
+纯本地部署的一站式音乐创作工作台（Windows / NVIDIA）。提供 **歌词时间戳精对齐、情绪语音合成、母版音色培育、ACE-Step 音色跟随** 四个功能 Tab，全部本地运行，数据不出本机。
 
 > 本仓库仅包含代码与配置。模型权重、依赖一键包体积巨大（约 200GB），不在仓库内，需按文末「依赖准备」自行获取。
 
 ## 功能状态（重要）
 
-| 功能 | 状态 | 说明 |
-| --- | --- | --- |
-| 歌曲母版生成（YuE2） | ✅ 可用 | style + lyrics 生成母版 vocal / 伴奏，长曲支持 |
-| 歌词时间戳精对齐（MVGR） | ✅ 可用 | ForcedAligner 多级窗口 + 线性补偿，输出 LRC / JSON |
-| 母版音色培育 | ✅ 可用 | 基于参考音色 + 语料批量克隆，产出可试听样本 |
-| 备用合成通道（VoxCPM / SongBloom） | ✅ 可用 | 零样本歌声克隆 / 参考音色直接唱歌 |
-| **参考音色唱歌（Seed-VC 换声）** | ⚠️ **效果不佳，约等于用不了** | 母版经 Seed-VC 换声后仍残留原唱腔 / 咬字 / 气声，融合度有限，与参考音色差距明显；仅作技术验证，不建议依赖此功能产出成品。推荐改用 VoxCPM 通道 |
+| Tab | 功能 | 状态 | 说明 |
+| --- | --- | --- | --- |
+| **① 歌词时间戳** | 音频 + 歌词 → 逐句起止时间 | ✅ 可用 | MVGR ForcedAligner 多级窗口 + 线性补偿，导出 lrc / csv |
+| **② 情绪语音合成** | 音色 + 文字 + 情绪 → 带情绪朗读 | ✅ 可用 | 基于 Qwen3-TTS，需外部 ComfyUI 环境 |
+| **③ 母版音色培育** | 声音设计 / 参考音色克隆 | ✅ 可用 | 基于 Qwen3-TTS，语料逐条合成 + 页内试听下载 |
+| **④ ACE-Step 音色跟随** | 参考音频 → Cover 翻唱 | ✅ 可用 | 端到端无机械音，走独立 REST API（推荐） |
+
+> 旧版「一键成曲 / 唱歌创作 / SoulX Score 按谱合成」链路及其 VoxCPM / SongBloom / Seed-VC 换声通道已从本版本移除，相关代码与入口不再保留。当前版本聚焦上表四个 Tab。
 
 ## 功能特性
 
-- **歌曲母版生成**：YuE2（T8 本地版）按 style / lyrics 生成母版人声与伴奏，支持 seed、cfg_scale、ABC 乐谱条件
-- **歌词发音友好预处理**：提交前用 pypinyin 检测多音字 / 生僻字并替换为常用同音字，降低认错字概率（可开关）
-- **音准校正**：换声后以母版 vocal 旋律为基准拉回逐音符跑调，仅在跑调段落局部重合成（可开关）
-- **母版音色培育**：Qwen3-TTS 批量克隆，语料按「文本|情绪」逐条合成，页内试听 + 下载
-- **MVGR 时间戳精对齐**：多级窗口 ForcedAligner 对齐 + 全局线性补偿 + 单调性整理，适配换歌后的精度退化
-- **双通道合成**：Seed-VC 换声通道 / VoxCPM 零样本克隆通道，自动故障回退
+- **① 歌词时间戳精对齐（MVGR）**：Whisper + Qwen3-ASR 识别，ForcedAligner 多级窗口对齐 + 全局线性补偿 + 单调性整理，输出 lrc / csv，适配换歌后的精度退化
+- **② 情绪语音合成**：音色 + 文字 + 情绪标签合成带情绪的朗读语音（Qwen3-TTS）
+- **③ 母版音色培育**：声音设计或参考音色克隆，语料按「文本|情绪」逐条合成，页内试听 + 下载
+- **④ ACE-Step 音色跟随**：参考音频经独立 ACE-Step REST API 做 Cover 翻唱，端到端生成、无机械音；API 服务独立运行、环境隔离，数据只在 127.0.0.1 回环传输
 - **纯本地**：所有推理在本机完成，无云端调用
 
 ## 目录结构
 
 ```
 Generate-Music-Timeline/
-├── 启动工具.bat          # 一键启动（自动定位依赖）
+├── 启动工具.bat          # 一键启动（自动定位依赖 → 检查服务 → 打开主界面）
 ├── setup_win.bat         # 移动项目后运行一次，修复虚拟环境路径
-├── webui.py              # 主界面入口（Gradio）
+├── start_acestep_api.bat # 启动 Tab④ 所需的 ACE-Step 独立 REST API（127.0.0.1:8001）
+├── webui.py              # 主界面入口（Gradio），注册下列四个 Tab
+├── requirements.txt      # venv_timeline 主环境依赖清单
+├── DEPLOY.md             # 从零部署教程
 ├── MVGR.spec             # MVGR 时间戳工具打包配置
-├── singing/              # 唱歌 / 时间戳流水线核心代码
-│   ├── pipeline.py       # 主流水线（母版生成 → 换声/克隆 → 音准校正 → 混音）
-│   ├── webui.py          # 唱歌页面（Gradio）
-│   ├── pitch_correct.py  # 音准校正（WORLD 重合成）
-│   ├── mix_master.py     # 母版混音
-│   ├── master_voice_webui.py / master_voice_worker.py  # 母版音色培育
-│   ├── emotion_tts_worker.py  # 情绪 TTS 引擎
-│   ├── voxcpm_worker.py  # VoxCPM 合成 worker
-│   ├── songbloom_worker.py   # SongBloom 合成 worker
-│   └── demucs_worker.py  # 伴奏分离 worker
-├── src/                  # 工具库与 MVGR 时间戳
-│   ├── webui/app.py      # MVGR 时间戳对齐界面
+├── singing/              # 语音合成 / 音色培育 / Cover 模块
+│   ├── emotion_tts_webui.py / emotion_tts_worker.py  # Tab② 情绪语音合成
+│   ├── master_voice_webui.py / master_voice_worker.py  # Tab③ 母版音色培育
+│   └── acestep_cover_ui.py   # Tab④ ACE-Step 音色跟随（HTTP 调用独立 API）
+├── src/                  # 工具库与 MVGR 歌词时间戳
+│   ├── webui/app.py      # Tab① 歌词时间戳对齐界面
 │   ├── model_manager.py  # 模型管理
 │   └── utils/            # 配置 / 日志 / 路径 / 更新检测
-└── configs/              # 配置与预设
-    └── presets/          # anime / cinematic / fantasy / realistic 预设
+└── configs/              # 配置与预设（presets/）
 ```
 
 ## 环境要求
 
 - **Windows 10/11**，仅支持 NVIDIA 显卡（CUDA）
-- 显存建议 **16GB**（母版长曲生成 + 换声同时加载较吃显存）
+- 显存建议 **16GB**（母版音色培育、ACE-Step 音色跟随加载模型较吃显存）
 - 磁盘剩余空间 ≥ 200GB（完整依赖）
 - Python 3.10（本仓库自带虚拟环境结构，依赖均装于 venv 内）
 
@@ -75,24 +70,29 @@ Generate-Music-Timeline/
 1. 阅读 [DEPLOY.md](DEPLOY.md)，按「环境要求」确认本机条件
 2. 按 DEPLOY.md「组件依赖获取渠道」获取并放置各组件依赖
 3. 运行 `setup_win.bat` 修复虚拟环境路径（移动项目 / 换电脑后必须执行）
-4. 双击 `启动工具.bat` 启动，等待浏览器自动打开主界面
+4. 双击 `启动工具.bat` 启动主界面
+5. 使用 Tab④ 前，另开窗口运行 `start_acestep_api.bat` 启动独立 API
 
 ## 快速开始
 
 1. 准备依赖（见下节），按原始目录结构放置到对应位置
 2. 双击 `启动工具.bat`，等待浏览器自动打开主界面
-3. Tab「唱歌」生成歌曲：填 style / lyrics，选择合成通道
-4. Tab「母版音色培育」批量克隆音色；Tab「MVGR」做歌词时间戳对齐
+3. **Tab「① 歌词时间戳」**：上传歌曲音频与歌词 → 输出逐句起止时间 → 导出 lrc / csv
+4. **Tab「② 情绪语音合成」**：选音色、填文字与情绪 → 合成带情绪朗读
+5. **Tab「③ 母版音色培育」**：声音设计或参考音色克隆 → 批量合成并试听下载
+6. **Tab「④ ACE-Step 音色跟随」**：先运行 `start_acestep_api.bat`，再上传参考音频 → Cover 翻唱
 
 ## 依赖准备
 
 以下内容体积巨大，未随仓库分发，需自行下载/部署：
 
-- `deps/YuE2-T8-Local-*/`：YuE2 歌曲生成一键包（含自带 Python 运行时与模型）
-- `deps/` 下 Seed-VC、VoxCPM、SongBloom、Qwen3-TTS 等模型
-- `models/`：各模型权重
+- `models/`：`large-v3.pt`（Whisper）、`Qwen3-ASR-1.7B-hf`、`Qwen3-ForcedAligner-0.6B-hf`（Tab① 歌词时间戳）
+- **Qwen3-TTS（Tab②③）**：模型权重与 `qwen_tts` 包位于外部 ComfyUI 环境（按 `F:\ComfyUI` 布局引用：`models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-Base` 与 `...-VoiceDesign`）
+- **ACE-Step 1.5（Tab④）**：独立的 `F:\ACE-Step-1.5` 环境（自带 venv），由 `start_acestep_api.bat` 在 `127.0.0.1:8001` 启动 REST API
 - `runtime_py310/`：Python 3.10 运行时
-- `venv_timeline/`、`venv_voxcpm/`、`venv_songbloom/`：虚拟环境
+- `venv_timeline/`：主界面虚拟环境
+
+> `deps/YuE2-T8-Local-*` 一键包仅为启动器的历史定位项；四个 Tab 的核心链路已不依赖 YuE2 服务。
 
 路径含中文会导致部分工具链异常，建议放在纯 ASCII 路径下。
 
@@ -100,13 +100,14 @@ Generate-Music-Timeline/
 
 | 现象 | 原因与处理 |
 | --- | --- |
-| 启动后界面打不开 / 服务报错 | 看 `logs\webui_restart.log` 与 `logs\yue2_service.log`；YuE2 服务首次启动需 1~2 分钟加载 |
-| 歌曲生成显示错误但产物已存在 | 多为轮询超时误报：母版长曲可达 50~80 分钟，优先查看 `outputs\` 下是否有 `final_song.wav` |
-| 生成中途崩溃（0xC0000005 / 卡死） | 多为 GPU 上下文未释放或 pyworld 遇 NaN；pipeline 已加网络兜底、轮询看门狗与音准校正子进程化，仍失败时关闭其他占显存程序重试 |
+| 启动后界面打不开 / 服务报错 | 查看 `logs\webui_restart.log`；首次加载模型约 1~2 分钟 |
+| Tab② ③ 不可用 | 大概率未配置 Qwen3-TTS（外部 ComfyUI 环境），见「依赖准备」 |
+| Tab④ 提示 API 未连接 | 先运行 `start_acestep_api.bat` 启动独立 API，确认 `127.0.0.1:8001` 就绪 |
+| 时间戳对齐偏差 | 用多级窗口 + 线性补偿重跑；换歌后建议重新对齐 |
 
 ## 免责声明
 
 - 本项目为个人本地工具，代码按现状提供，不承诺任何效果与稳定性
 - 生成内容含 AI 合成成分，请遵守当地法律法规与平台规则，勿用于侵权用途
-- 第三方组件（YuE2、Seed-VC、VoxCPM、Qwen3-TTS、demucs 等）版权归其各自作者所有，分发时请遵守对应开源协议
+- 第三方组件（Qwen3-TTS、ACE-Step、Whisper、demucs 等）版权归其各自作者所有，分发时请遵守对应开源协议
 *（内容由AI生成，仅供参考）*

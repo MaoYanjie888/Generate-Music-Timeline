@@ -1,19 +1,16 @@
 # -*- coding: utf-8 -*-
 """
-母版音色培育 Tab (声音设计 + 声音克隆 四引擎)
+母版音色培育 Tab (声音设计 + 声音克隆, Qwen3-TTS 双引擎)
 =============================================
 独立 Gradio 分页, 参照「母版TTS生成工作流.json」实现从无到有捏音色:
 
   A. 声音设计(无需参考音频, 从描述捏出全新音色):
      A1 Qwen3 VoiceDesign : 填音色描述 + 文本 -> generate_voice_design
-     A2 VoxCPM voice_design : 填音色描述 + 文本 -> "(描述)"前缀文本纯文本合成
   B. 声音克隆(以参考音色为基底微调):
      B1 Qwen3 克隆   : 上传参考音频(可选转录文本) -> 零样本克隆
-     B2 VoxCPM 克隆  : 上传参考音频(可选转录文本) -> 极致克隆
 
 产物落 outputs/master_voice/<stamp>/ 供 Tab1 参考音色自动扫描。
-Qwen3 引擎由 F:\ComfyUI\venv\Scripts\python.exe 子进程执行,
-VoxCPM 引擎由 F:\Generate-Music-Timeline\venv_voxcpm\Scripts\python.exe 子进程执行。
+Qwen3 引擎由 F:\ComfyUI\venv\Scripts\python.exe 子进程执行。
 """
 
 import json
@@ -27,32 +24,23 @@ import gradio as gr
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 COMFYUI_PYTHON = r"F:\ComfyUI\venv\Scripts\python.exe"
-VENV_VOXCPM_PYTHON = str(PROJECT_ROOT / "venv_voxcpm" / "Scripts" / "python.exe")
 WORKER_PY = PROJECT_ROOT / "singing" / "master_voice_worker.py"
 
 QWEN3_DESIGN_MODEL_DIR = r"F:\ComfyUI\models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-VoiceDesign"
 QWEN3_CLONE_MODEL_DIR = r"F:\ComfyUI\models\Qwen3-TTS\Qwen3-TTS-12Hz-1.7B-Base"
-VOXCPM_MODEL_DIR = str(PROJECT_ROOT / "models" / "VoxCPM2")
 
 ENGINE_CHOICES = [
     ("qwen3-design", "Qwen3 声音设计（从描述捏音色）"),
-    ("voxcpm-design", "VoxCPM 声音设计（从描述捏音色）"),
     ("qwen3-clone", "Qwen3 声音克隆（参考音色）"),
-    ("voxcpm-clone", "VoxCPM 声音克隆（参考音色）"),
 ]
 ENGINE_KEYS = [k for k, _ in ENGINE_CHOICES]
 ENGINE_LABELS = dict(ENGINE_CHOICES)
 
 
 def check_env(engine: str):
-    if engine.startswith("qwen3"):
-        python = COMFYUI_PYTHON
-        model_dir = QWEN3_DESIGN_MODEL_DIR if engine == "qwen3-design" else QWEN3_CLONE_MODEL_DIR
-        model_name = "Qwen3 VoiceDesign" if engine == "qwen3-design" else "Qwen3 Base"
-    else:
-        python = str(VENV_VOXCPM_PYTHON)
-        model_dir = VOXCPM_MODEL_DIR
-        model_name = "VoxCPM2"
+    python = COMFYUI_PYTHON
+    model_dir = QWEN3_DESIGN_MODEL_DIR if engine == "qwen3-design" else QWEN3_CLONE_MODEL_DIR
+    model_name = "Qwen3 VoiceDesign" if engine == "qwen3-design" else "Qwen3 Base"
     if not Path(python).is_file():
         return False, f"未找到解释器: {python}"
     if not Path(model_dir).is_dir():
@@ -62,7 +50,6 @@ def check_env(engine: str):
 
 def do_master_voice(engine, design, corpus, reference, ref_text,
                     max_new_tokens, temperature, seed,
-                    cfg_value, inference_timesteps,
                     progress=gr.Progress()):
     if engine not in ENGINE_KEYS:
         raise gr.Error("请选择培育引擎")
@@ -91,7 +78,7 @@ def do_master_voice(engine, design, corpus, reference, ref_text,
     out_dir = PROJECT_ROOT / "outputs" / "master_voice" / stamp
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    python = COMFYUI_PYTHON if engine.startswith("qwen3") else str(VENV_VOXCPM_PYTHON)
+    python = COMFYUI_PYTHON
     cmd = [
         python, str(WORKER_PY),
         "--engine", engine,
@@ -105,17 +92,11 @@ def do_master_voice(engine, design, corpus, reference, ref_text,
         cmd += ["--reference", str(reference)]
         if ref_text and ref_text.strip():
             cmd += ["--ref_text", ref_text.strip()]
-    if engine.startswith("qwen3"):
-        cmd += [
-            "--max_new_tokens", str(int(max_new_tokens)),
-            "--temperature", str(float(temperature)),
-            "--seed", str(int(seed)),
-        ]
-    else:
-        cmd += [
-            "--cfg_value", str(float(cfg_value)),
-            "--inference_timesteps", str(int(inference_timesteps)),
-        ]
+    cmd += [
+        "--max_new_tokens", str(int(max_new_tokens)),
+        "--temperature", str(float(temperature)),
+        "--seed", str(int(seed)),
+    ]
 
     progress(0.05, desc="启动培育引擎（首次需加载模型，约 1~3 分钟）")
     try:
@@ -169,9 +150,9 @@ def build_master_voice_tab():
     """构建「母版音色培育」Tab 内容（声音设计 + 声音克隆）。"""
     gr.Markdown(
         "### 母版音色培育（从无到有捏音色）\n\n"
-        "参照「母版TTS生成工作流」的两条链路：\n"
+        "参照「母版TTS生成工作流」的两条 Qwen3-TTS 链路：\n"
         "- **声音设计**：填一段音色描述 → 从无到有捏出全新音色（无需参考音频）；\n"
-        "- **声音克隆**：上传参考音色 → 以它为基底克隆（可选转录文本做极致克隆）。\n\n"
+        "- **声音克隆**：上传参考音色 → 以它为基底克隆（可选转录文本）。\n\n"
         "培育产物自动落入 `outputs/master_voice/`，Tab1 唱歌创作会自动扫描为参考音色。"
     )
 
@@ -204,12 +185,9 @@ def build_master_voice_tab():
         )
 
     with gr.Row():
-        max_tokens = gr.Slider(256, 4096, value=2048, step=64, label="max_new_tokens（Qwen3）")
-        temperature = gr.Slider(0.5, 1.5, value=0.9, step=0.05, label="temperature（Qwen3）")
-        seed = gr.Number(value=42, precision=0, label="seed（Qwen3）")
-    with gr.Row():
-        cfg_value = gr.Slider(0.5, 5.0, value=2.0, step=0.1, label="cfg_value（VoxCPM）")
-        inference_timesteps = gr.Slider(2, 30, value=10, step=1, label="inference_timesteps（VoxCPM）")
+        max_tokens = gr.Slider(256, 4096, value=2048, step=64, label="max_new_tokens")
+        temperature = gr.Slider(0.5, 1.5, value=0.9, step=0.05, label="temperature")
+        seed = gr.Number(value=42, precision=0, label="seed")
 
     run_btn = gr.Button("开始培育", variant="primary")
     status_text = gr.Textbox(label="状态", interactive=False)
@@ -243,6 +221,6 @@ def build_master_voice_tab():
     run_btn.click(
         fn=do_master_voice,
         inputs=[engine, design, corpus, ref_audio, ref_text,
-                max_tokens, temperature, seed, cfg_value, inference_timesteps],
+                max_tokens, temperature, seed],
         outputs=[sample_dropdown, player, out_files, status_text, out_dir_box],
     )
