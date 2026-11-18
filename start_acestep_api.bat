@@ -19,8 +19,11 @@ if not exist "%PY%" (
 REM 本机走代理时放行回环地址，避免 Gradio/HTTP 自检被代理拦截
 set NO_PROXY=127.0.0.1,localhost
 set no_proxy=127.0.0.1,localhost
-REM cover 任务自动跳过 LM（文档说明），不初始化 LLM 以节省显存
-set ACESTEP_INIT_LLM=false
+REM 启用 LM 权重以支持 thinking / CoT 重写，提升人声清晰度与旋律节奏
+REM vllm 未随包安装，使用 pt 后端；权重 acestep-5Hz-lm-1.7B 本机已就位
+set ACESTEP_INIT_LLM=true
+set ACESTEP_LM_MODEL_PATH=acestep-5Hz-lm-1.7B
+set ACESTEP_LM_BACKEND=pt
 set ACESTEP_NO_INIT=true
 set ACESTEP_DOWNLOAD_SOURCE=modelscope
 

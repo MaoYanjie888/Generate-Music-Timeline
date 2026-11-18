@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACE-Step 1.5 歌词格式与风格提示词规范</title>
+    <style>
+
+/* ===== 基础重置 ===== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== 页面整体 ===== */
+html {
+    font-size: 14px;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+                 "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue",
+                 Helvetica, Arial, sans-serif;
+    color: #333;
+    background: #f5f5f5;
+    padding: 0;
+    margin: 0;
+}
+
+/* ===== 页面容器 ===== */
+.page-wrapper {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    min-height: 100vh;
+}
+
+/* ===== 页眉 ===== */
+.header {
+    background: #2E86AB;
+    color: #fff;
+    padding: 28px 48px;
+    border-bottom: 3px solid #277191;
+}
+
+.header h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 0;
+    letter-spacing: 0.5px;
+}
+
+.header .report-meta {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 6px;
+}
+
+/* ===== 内容区 ===== */
+.content {
+    padding: 36px 48px 48px;
+}
+
+/* ===== 标题 ===== */
+.content h1 {
+    font-size: 1.6rem;
+    color: #2E86AB;
+    border-bottom: 2px solid #2E86AB;
+    padding-bottom: 8px;
+    margin: 32px 0 16px;
+}
+
+.content h2 {
+    font-size: 1.35rem;
+    color: #333;
+    border-left: 4px solid #2E86AB;
+    padding-left: 12px;
+    margin: 28px 0 14px;
+}
+
+.content h3 {
+    font-size: 1.15rem;
+    color: #444;
+    margin: 22px 0 10px;
+}
+
+.content h4 {
+    font-size: 1.05rem;
+    color: #555;
+    margin: 18px 0 8px;
+}
+
+/* ===== 段落与文本 ===== */
+.content p {
+    margin: 10px 0;
+    text-align: justify;
+}
+
+.content strong {
+    color: #2E86AB;
+}
+
+.content em {
+    font-style: italic;
+    color: #666;
+}
+
+/* ===== 引用块 ===== */
+.content blockquote {
+    border-left: 4px solid #2E86AB;
+    background: #eef5f8;
+    padding: 12px 20px;
+    margin: 16px 0;
+    border-radius: 0 6px 6px 0;
+    color: #555;
+}
+
+.content blockquote p {
+    margin: 4px 0;
+}
+
+/* ===== 列表 ===== */
+.content ul, .content ol {
+    padding-left: 24px;
+    margin: 10px 0;
+}
+
+.content li {
+    margin: 4px 0;
+}
+
+.content li::marker {
+    color: #2E86AB;
+}
+
+/* ===== 表格 ===== */
+.table-wrapper {
+    overflow-x: auto;
+    margin: 16px 0;
+    border-radius: 6px;
+    border: 1px solid #e8e8e8;
+}
+
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+}
+
+.content thead {
+    background: #2E86AB;
+    color: #fff;
+}
+
+.content thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.content tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.content tbody tr:hover {
+    background: #eef5f8;
+}
+
+.content tbody td {
+    padding: 9px 14px;
+    border-top: 1px solid #e8e8e8;
+}
+
+/* ===== 代码 ===== */
+.content code {
+    background: #f6f6f6;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-size: 0.9em;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+.content pre {
+    background: #f6f6f6;
+    padding: 16px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 14px 0;
+    border: 1px solid #e8e8e8;
+}
+
+.content pre code {
+    background: none;
+    padding: 0;
+}
+
+/* ===== 图片 ===== */
+.content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 12px 0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ===== 水平线 ===== */
+.content hr {
+    border: none;
+    border-top: 1px solid #e8e8e8;
+    margin: 24px 0;
+}
+
+/* ===== ECharts 图表容器 ===== */
+.echarts-container {
+    width: 100%;
+    height: 400px;
+    margin: 20px 0;
+    border-radius: 6px;
+    border: 1px solid #e8e8e8;
+    background: #fff;
+}
+
+.echarts-title {
+    text-align: center;
+    font-size: 0.9rem;
+    color: #888;
+    margin-top: 4px;
+    margin-bottom: 16px;
+}
+
+/* ===== 图表占位/降级提示 ===== */
+.chart-placeholder {
+    width: 100%;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    color: #999;
+    font-size: 0.95rem;
+    margin: 20px 0;
+    padding: 20px;
+}
+
+/* ===== 页脚 ===== */
+.footer {
+    background: #fafafa;
+    border-top: 1px solid #e8e8e8;
+    padding: 16px 48px;
+    text-align: center;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+/* ===== 响应式布局 ===== */
+@media (max-width: 768px) {
+    .page-wrapper {
+        margin: 0;
+        box-shadow: none;
+    }
+
+    .header {
+        padding: 20px 20px;
+    }
+
+    .header h1 {
+        font-size: 1.35rem;
+    }
+
+    .content {
+        padding: 20px 20px 28px;
+    }
+
+    .footer {
+        padding: 12px 20px;
+    }
+
+    .content h1 { font-size: 1.35rem; }
+    .content h2 { font-size: 1.15rem; }
+    .content h3 { font-size: 1.05rem; }
+
+    .echarts-container {
+        height: 300px;
+    }
+}
+
+/* ===== 打印适配 ===== */
+@media print {
+    body {
+        background: #fff;
+    }
+
+    .page-wrapper {
+        box-shadow: none;
+        max-width: 100%;
+    }
+
+    .header {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .content table thead {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .echarts-container {
+        break-inside: avoid;
+    }
+
+    .footer {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+}
+
+    </style>
+
+</head>
+<body>
+    <div class="page-wrapper">
+        <header class="header">
+            <h1>ACE-Step 1.5 歌词格式与风格提示词规范</h1>
+        </header>
+        <main class="content">
+
+<blockquote>
+<p>目标：解决「生成的歌没 YuE2 好听、歌偏短」两个问题。 依据：ACE-Step
+1.5 本地仓库
+<code>docs/zh/Tutorial.md</code>、<code>ace_step_musicians_guide.md</code>、<code>acestep-songwriting/SKILL.md</code>、<code>examples/text2music/*.json</code>（200
+个样本），以及生成端
+<code>Generate-Music-Timeline/singing/acestep_cover_ui.py</code>。
+范围：仅调研与规范，不含程序代码改动。</p>
+</blockquote>
+<hr />
+<h2 id="一结论先行">一、结论先行</h2>
+<div class="table-wrapper"><table>
+<colgroup>
+<col style="width: 27%" />
+<col style="width: 27%" />
+<col style="width: 45%" />
+</colgroup>
+<thead>
+<tr>
+<th>现象</th>
+<th>根因</th>
+<th>解决方向</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>歌没 YuE2 好听</td>
+<td>① 中文未按 <code>[zh]</code> 音素标注，咬字含混；② caption
+过于笼统、与歌词情绪脱节；③ 结构标记缺失或堆叠，段落无所指</td>
+<td>中文歌词逐行加 <code>[zh]</code> 带声调拼音；caption
+按七维度写具体；结构标记用标准标签且一段一标记</td>
+</tr>
+<tr>
+<td>歌偏短</td>
+<td>时长估算 <code>infer_duration_from_lyrics</code> 按 4 字/秒 + 6
+秒估算，未计入 Intro/Outro/间奏等纯器乐段，长结构被严重压缩</td>
+<td>提高每字秒数、按段落数预留器乐时间、显式指定
+<code>audio_duration</code></td>
+</tr>
+</tbody>
+</table></div>
+<p>一句话：<strong>YuE2 是”谱面驱动”（音符级可控），ACE-Step
+是”文本驱动”（caption + lyrics 描述驱动）</strong>。用 YuE2 的期待去写
+ACE 的输入，是难听的主因；规范输入写法后，两者才有可比性。</p>
+<hr />
+<h2 id="二ace-step-与-yue2-的驱动范式差异难听根因">二、ACE-Step 与 YuE2
+的驱动范式差异（难听根因）</h2>
+<div class="table-wrapper"><table>
+<colgroup>
+<col style="width: 17%" />
+<col style="width: 41%" />
+<col style="width: 41%" />
+</colgroup>
+<thead>
+<tr>
+<th>维度</th>
+<th>YuE2（v1/v2）</th>
+<th>ACE-Step 1.5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>驱动方式</td>
+<td>style + lyrics + Cot + abc 谱面驱动</td>
+<td>caption + lyrics +
+音乐元数据（bpm/keyscale/timesignature/vocal_language）文本驱动</td>
+</tr>
+<tr>
+<td>控制粒度</td>
+<td>音符级：音高、时值由谱面显式给出</td>
+<td>段落级：结构标记 + 文本描述，音符由模型自行生成</td>
+</tr>
+<tr>
+<td>中文咬字</td>
+<td>依赖符号/音素路线</td>
+<td>依赖 <code>[zh]</code> 拼音音素行对齐发音</td>
+</tr>
+<tr>
+<td>可控性来源</td>
+<td>谱面越细越准</td>
+<td>描述越具体、结构越清晰越准</td>
+</tr>
+</tbody>
+</table></div>
+<p><strong>关键判断</strong>：ACE-Step 没有”谱面”这一层，无法用 abc
+精确指定旋律。把 YuE2 的谱面思维搬过来，期待 ACE
+逐音符复现旋律，必然失望。ACE
+的可控性来自两处——<strong>结构标记（何时进副歌、何处留白）</strong> 和
+<strong>caption
+的具体度（什么风格、什么乐器、什么情绪）</strong>。这两处写到位，是”变好听”的全部抓手。</p>
+<blockquote>
+<p>参考本地事实：YuE2-T8 本体无原生 ICL，符号路线靠
+style/lyrics/cot/abc；本机已放弃 YuE2 ICL 路线，改用 ACE-Step 1.5
+端到端。</p>
+</blockquote>
+<hr />
+<h2 id="三歌词lyrics格式规范">三、歌词（Lyrics）格式规范</h2>
+<p>Lyrics
+是音乐的「时间脚本」，承载歌词文本、结构标记、演唱方式提示、器乐段落与能量变化。</p>
+<h3 id="结构标记meta-tags">3.1 结构标记（Meta Tags）</h3>
+<p>方括号单独成行。一段一标记，组合用连字符，不要堆叠。</p>
+<div class="table-wrapper"><table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 33%" />
+<col style="width: 33%" />
+</colgroup>
+<thead>
+<tr>
+<th>类别</th>
+<th>标记</th>
+<th>用途</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>基础结构</td>
+<td><code>[Intro]</code> <code>[Verse]</code> / <code>[Verse 1]</code>
+<code>[Pre-Chorus]</code> <code>[Chorus]</code> <code>[Bridge]</code>
+<code>[Outro]</code></td>
+<td>歌曲骨架，主叙事与高潮</td>
+</tr>
+<tr>
+<td>动态段落</td>
+<td><code>[Build]</code> <code>[Drop]</code>
+<code>[Breakdown]</code></td>
+<td>能量攀升 / 释放 / 留白</td>
+</tr>
+<tr>
+<td>器乐段落</td>
+<td><code>[Instrumental]</code> <code>[Guitar Solo]</code>
+<code>[Piano Solo]</code> <code>[Violin Solo]</code></td>
+<td>纯器乐，无人声</td>
+</tr>
+<tr>
+<td>演唱细节</td>
+<td><code>[Vocal ad-libs]</code> <code>[whispered]</code>
+<code>[raspy vocal]</code> <code>[falsetto]</code>
+<code>[female vocal]</code></td>
+<td>发声方式</td>
+</tr>
+<tr>
+<td>能量情绪</td>
+<td><code>[building energy]</code> <code>[explosive drop]</code>
+<code>[soft]</code> <code>[intense]</code></td>
+<td>力度与情绪走向</td>
+</tr>
+<tr>
+<td>结尾方式</td>
+<td><code>[fade out]</code> <code>[Final chord]</code></td>
+<td>收束方式</td>
+</tr>
+</tbody>
+</table></div>
+<p>规则： - 组合标记用连字符，如
+<code>[Verse 1 - soft]</code>、<code>[Chorus - powerful]</code>，勿写成
+<code>[Verse][Chorus]</code> 连堆。 -
+标记与歌词内容保持一致：<code>[Bridge]</code>
+段的文字应当有转折/升华，不能与 Verse 同质。 - 纯音乐填
+<code>[Instrumental]</code>。</p>
+<h3 id="中文歌词必须用-zh-拼音音素标注关键">3.2 中文歌词必须用
+<code>[zh]</code> 拼音音素标注（关键）</h3>
+<p>本地 200 个 text2music 示例中，中文样本（如
+<code>example_04.json</code>）的歌词并非直接写汉字，而是<strong>逐行以
+<code>[zh]</code> 前缀 + 带声调数字的拼音</strong>给出：</p>
+<pre><code>[Verse 1]
+[zh] ye4 wan3 de5 feng1   qing1 qing1 chui1 guo4
+[zh] ni3 de5 xiao4 rong2   zai4 wo3 xin1 zhong1 shan3 shuo4</code></pre>
+<p>规范： - 每个音节用「拼音 + 声调数字（1-4，轻声 5）」表示，如
+<code>qing1</code>、<code>wan3</code>、<code>de5</code>。 -
+音节内空格分隔；词与词之间用双空格，模拟演唱停顿与分组。 -
+结构标记行仍用英文方括号，不翻译为中文。 - 只有语气词/拟声可用英文，如
+<code>Yeah</code>、<code>Oh</code>、<code>One</code>。 -
+<strong>作用</strong>：这是 ACE
+对齐中文发音的核心输入。直接写汉字会导致咬字不准、含混甚至乱音，这是”没
+YuE2 好听”的首要技术根因。</p>
+<h3 id="换行与音节">3.3 换行与音节</h3>
+<ul>
+<li>每行控制 <strong>6–10 个音节</strong>（中文约 6–10
+字），过长会被挤唱，过短会拖沓。</li>
+<li>一行 = 一个乐句单位；按语义断行，勿把完整意象拆散。</li>
+<li>大写英文词可表强调：<code>SO HIGH</code>、<code>FOREVER</code>。</li>
+<li>括号内可写背景声或备注：<code>(whispering)</code>
+<code>(crowd cheering)</code>。</li>
+<li>避免”AI 味”歌词：少用陈词滥调，多具体意象与真实情绪。</li>
+</ul>
+<h3 id="推荐结构模板">3.4 推荐结构模板</h3>
+<p>完整流行结构（对应下文字长估算）：
+<code>[Intro] → [Verse 1] → [Pre-Chorus] → [Chorus] → [Verse 2] → [Pre-Chorus] → [Chorus] → [Bridge] → [Chorus] → [Outro]</code></p>
+<p>副歌至少出现 2 次（含末尾高潮），Bridge 提供转折，Intro/Outro
+留器乐空间。</p>
+<hr />
+<h2 id="四caption风格提示词规范">四、Caption（风格提示词）规范</h2>
+<p>Caption
+是影响生成音乐<strong>最重要</strong>的输入。它描述整体画像：风格、乐器、情绪、氛围、音色、演唱者性别、起承转合。Lyrics
+负责”时间脚本”，Caption 负责”整体画像”，二者缺一不可且必须一致。</p>
+<h3 id="七维度写作框架">4.1 维度写作框架（七维度 + 人声突出强化项）</h3>
+<div class="table-wrapper"><table>
+<colgroup>
+<col style="width: 42%" />
+<col style="width: 57%" />
+</colgroup>
+<thead>
+<tr>
+<th>维度</th>
+<th>示例词</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>风格/流派</td>
+<td>pop, rock, jazz, folk, classical, lo-fi, synthwave, Mandopop,
+Chinese traditional</td>
+</tr>
+<tr>
+<td>情绪/氛围</td>
+<td>melancholic, uplifting, dreamy, nostalgic, intimate, ethereal</td>
+</tr>
+<tr>
+<td>乐器</td>
+<td>acoustic guitar, piano,strings, guqin, pipa, dizi, erhu, synth pads,
+808 drums</td>
+</tr>
+<tr>
+<td>音色质感</td>
+<td>warm, bright, airy, crisp, lush, raw, polished</td>
+</tr>
+<tr>
+<td>时代参考</td>
+<td>80s synth-pop, 90s grunge, vintage soul, ancient Chinese, modern
+trap</td>
+</tr>
+<tr>
+<td>人声特点</td>
+<td>female vocal, male vocal, breathy, powerful, falsetto, raspy,
+choir</td>
+</tr>
+<tr>
+<td><strong>混音层级 / 人声突出</strong>（强化项）</td>
+<td>close-mic, front and center, dry and upfront, clear and prominent, vocal always clearly audible, instruments low in the mix, no dense pads competing with lead vocal</td>
+</tr>
+<tr>
+<td>结构提示</td>
+<td>building intro, catchy chorus, dramatic bridge, fade-out ending</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="写作原则">4.2 写作原则</h3>
+<ol type="1">
+<li><strong>具体优于模糊</strong>：<code>sad piano ballad with female breathy vocal</code>
+远好于 <code>a sad song</code>。</li>
+<li><strong>组合多维度</strong>：单一维度给模型太多自由；风格+情绪+乐器+音色组合才精准锚定。</li>
+<li><strong>善用参考</strong>：<code>in the style of ...</code>、<code>reminiscent of ...</code>
+可快速传达复杂美学。</li>
+<li><strong>质感词有用</strong>：warm / crisp / airy / punchy
+会影响混音与音色倾向。</li>
+<li><strong>描述粒度=自由度</strong>：想可控就写细，想惊喜就写少。</li>
+<li><strong>避免冲突</strong>：不要同时要”古典弦乐”和”硬核金属”。开
+thinking 时 LM 对冲突 caption 的泛化弱于 DiT，乱组合惊喜概率更低。
+<ul>
+<li>化解：重复强化想要的元素；或把冲突改成时间演变——“开头柔和弦乐，中段转金属，结尾
+hip-hop”。</li>
+</ul></li>
+<li><strong>Caption 与 Lyrics 一致</strong>：caption
+写”安静钢琴”，lyrics 却标
+<code>[explosive drop]</code>，会互相打架。两边情绪、段落走向须对齐。</li>
+</ol>
+<h3 id="用工具扩展-caption">4.3 用工具扩展 Caption</h3>
+<p>本地支持 5 种方式降低”音乐词汇贫瘠”：随机骰子（拿规范 caption
+当模板）、Format 自动改写、CoT 重写（需初始化 LM）、音频转
+Caption、Simple 模式（一句话生成完整样本）。<strong>Prompting
+始终是边际收益最大的选项</strong>。</p>
+<blockquote>
+<p>本机现已加载 LM（acestep-5Hz-lm-1.7B）并启用 thinking，CoT 重写 /
+thinking 增强可用；仍建议先把 caption 写具体，再让 LM 在此基础上增强，二者叠加效果最佳。</p>
+</blockquote>
+<h3 id="人声突出与旋律节奏写法">4.4 人声突出与旋律节奏写法（清晰度与记忆点关键）</h3>
+<p>ACE 默认把人声与伴奏按同一响度混音，古风 / EMO 常出现人声被 pad
+与中频乐器盖过、咬字发闷的问题。解决之道不是只写 <code>clear
+vocal</code>，而是在 caption 里<strong>显式指定混音层级（mix
+hierarchy）</strong>——把人声钉在声场最前、要求伴奏退后，并点名避开抢占中频的织体。</p>
+<p>人声突出片段（追加在 caption 末尾）：</p>
+<pre><code>Intimate close-mic female vocal, front and center, dry and upfront, clear and prominent. Sparse minimalist arrangement, instruments low in the mix and restrained, no dense pads or midrange textures competing with the lead vocal. Vocal always clearly audible.</code></pre>
+<ul>
+<li><code>close-mic</code> / <code>front and center</code> / <code>dry and
+upfront</code>：近距拾音、居中靠前、少混响，提升咬字清晰度与存在感。</li>
+<li><code>instruments low in the mix and restrained</code>：明确要求伴奏退到后景，避免器乐盖过人声。</li>
+<li><code>no dense pads or midrange textures competing with the lead
+vocal</code>：点名禁止抢占中频的厚 pad / 织体，这是人声发闷的常见根因。</li>
+<li><code>Vocal always clearly audible</code>：全曲级硬约束，副歌与戏腔爆发段同样保持人声可闻。</li>
+</ul>
+<p>旋律与节奏片段（紧跟其后，锚定记忆点与律动）：</p>
+<pre><code>catchy memorable melody, simple repeating melodic hook, clear steady groove, gentle rhythmic pulse, builds to a soaring emotional chorus</code></pre>
+<ul>
+<li><code>catchy memorable melody</code> + <code>simple repeating melodic
+hook</code>：要求简单可复述的旋律动机，配合 Lyrics 副歌重复，形成记忆点。</li>
+<li><code>clear steady groove</code> / <code>gentle rhythmic
+pulse</code>：稳定律动，避免 ACE 节奏飘忽。</li>
+<li><code>builds to a soaring emotional chorus</code>：与结构标记的副歌爆发对齐。</li>
+</ul>
+<h3 id="关键参数guidance-scale与lmthinking">4.5 关键参数：guidance_scale 与 LM / thinking</h3>
+<div class="table-wrapper"><table>
+<colgroup>
+<col style="width: 28%" />
+<col style="width: 22%" />
+<col style="width: 49%" />
+</colgroup>
+<thead>
+<tr>
+<th>参数</th>
+<th>建议值</th>
+<th>作用与说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>guidance_scale</code></td>
+<td><strong>7–9</strong></td>
+<td>文本遵循度。偏低（&lt;7）caption 被稀释、人声与风格特征变弱；偏高（&gt;9）易过饱和、音色发硬。追求人声清晰与旋律贴合时取 8 左右起步，再按成品微调。</td>
+</tr>
+<tr>
+<td><code>thinking</code></td>
+<td><strong>true</strong></td>
+<td>启用 LM 的思维链 / CoT 预处理，先规划再生成，对长结构、旋律走向与歌词咬合的把控更强；需 LM 已加载，否则自动跳过。</td>
+</tr>
+<tr>
+<td>LM 权重</td>
+<td>acestep-5Hz-lm-1.7B</td>
+<td>本机已下载完整（约 3.5 GB），位于 <code>checkpoints/acestep-5Hz-lm-1.7B</code>；pt 后端（vllm 未随包安装）。</td>
+</tr>
+<tr>
+<td>启用方式</td>
+<td>启动脚本 / 热加载</td>
+<td>启动脚本设 <code>ACESTEP_INIT_LLM=true</code>；服务已运行时可用 <code>POST /v1/init</code> 带 <code>init_llm=true</code>、<code>lm_model_path=acestep-5Hz-lm-1.7B</code> 热加载，无需重启。</td>
+</tr>
+</tbody>
+</table></div>
+<blockquote>
+<p>配合关系：人声突出 / 旋律节奏靠 caption 写到位（4.4），guidance_scale
+保证这些描述被忠实执行（7–9），thinking + LM
+负责在生成前把结构、旋律与咬字规划清楚。三者叠加才稳定改善清晰度与节奏。</p>
+</blockquote>
+<hr />
+<h2
+id="五歌偏短时长估算根因与修正建议">五、歌偏短：时长估算根因与修正建议</h2>
+<h3 id="当前实现">5.1 当前实现</h3>
+<p><code>Generate-Music-Timeline/singing/acestep_cover_ui.py</code> 第
+134 行：</p>
+<div class="sourceCode" id="cb2"><pre
+class="sourceCode python"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> infer_duration_from_lyrics(lyrics, char_per_sec<span class="op">=</span><span class="fl">4.0</span>, tail_buffer<span class="op">=</span><span class="fl">6.0</span>):</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    han   <span class="op">=</span> <span class="bu">len</span>(汉字<span class="op">/</span>假名<span class="op">/</span>韩文)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> <span class="bu">len</span>(英文词)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    units <span class="op">=</span> han <span class="op">+</span> words</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    sec   <span class="op">=</span> units <span class="op">/</span> char_per_sec <span class="op">+</span> tail_buffer   <span class="co"># 4 字/秒 + 6 秒</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> clamp(sec, <span class="dv">10</span>, <span class="dv">600</span>)</span></code></pre></div>
+<p>text2music 模式 <code>audio_duration</code> 生效，<code>est</code>
+由上式给出，最终
+<code>final_duration = max(指定时长, 估算时长)</code>；cover 模式忽略
+<code>audio_duration</code>，成品时长与参考音频一致。</p>
+<h3 id="偏短根因">5.2 偏短根因</h3>
+<ol type="1">
+<li><strong>每字秒数过快</strong>：4
+字/秒是”保守下限”式的快语速，抒情、古风、慢板实际约 2–3
+字/秒，估出的时长偏小。</li>
+<li><strong>只留 6 秒尾部 buffer</strong>：完全没有为
+<code>[Intro]</code>、<code>[Outro]</code>、<code>[Instrumental]</code>、<code>[Bridge]</code>、间奏等<strong>纯器乐段</strong>预留时间。这些段落官方建议每段
+5–15 秒。</li>
+<li><strong>结构段被当空气</strong>：估算时剔除所有结构标记行，等于假设整首歌从头唱到尾，忽略了留白与器乐。</li>
+<li><strong>官方经验值远高于此</strong>：2 Verse + 2 Chorus 至少 120–150
+秒；加 Bridge 180–240 秒；完整含 Intro/Outro 210–270 秒；慢 BPM
+还要更长。</li>
+</ol>
+<p>量级对比（以本文第 6 节茅泠汐歌词为例，188 字，含
+Intro/Verse×2/Pre-Chorus/Chorus/Bridge/Outro）：</p>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>算法</th>
+<th>估算时长</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>当前实现（4 字/秒 + 6 秒）</td>
+<td><strong>53 秒</strong></td>
+</tr>
+<tr>
+<td>修正（2.5 字/秒 + 每结构段预留 2 秒）</td>
+<td>约 89 秒</td>
+</tr>
+<tr>
+<td>官方对完整结构的建议</td>
+<td><strong>210–270 秒</strong></td>
+</tr>
+</tbody>
+</table></div>
+<p>当前实现与官方建议相差 4–5 倍，这就是”歌偏短”的直接原因。</p>
+<h3 id="修正建议供工程侧参考本文不改代码">5.3
+修正建议（供工程侧参考，本文不改代码）</h3>
+<ul>
+<li>将 <code>char_per_sec</code> 从 4.0 降到
+<strong>2.5–3.0</strong>（慢歌取低值）；</li>
+<li>按结构段数量预留器乐时间：<code>buffer = 段数 × 2~3 秒</code>，替代固定
+6 秒；</li>
+<li>若显式指定
+<code>audio_duration</code>，以官方经验值为下限：完整结构直接给
+<strong>210–270 秒</strong>，不要依赖自动估算；</li>
+<li>生成后核对成品实际时长，短于预期则调大 <code>audio_duration</code>
+重跑。</li>
+</ul>
+<blockquote>
+<p>结论：数据侧偏短是<strong>估算公式过于激进</strong>导致，与音色/演唱质量无关，单独调时长即可修复。</p>
+</blockquote>
+<hr />
+<h2
+id="六可直接套用规范古风歌手茅泠汐完整示例">六、可直接套用规范：古风歌手「茅泠汐」完整示例</h2>
+<p>以下三段（caption / lyrics /
+参数）可直接复制使用。歌词围绕虚拟歌手”茅泠汐”设定，采用古风意象，严格押<strong>言前辙</strong>（an/ian/uan
+韵：天、川、边、年、烟、见、天、山、迁、牵、言、间、远），并逐行做
+<code>[zh]</code> 音素标注。</p>
+<h3 id="caption英文七维度齐全">6.1 Caption（英文，七维度齐全）</h3>
+<pre><code>A gentle ancient-Chinese style ballad, blending traditional guqin and dizi with soft modern synth pads. Melancholic, nostalgic and ethereal mood, like moonlight on a quiet river. Warm, airy, lo-fi texture with a slow, laid-back tempo. Intimate female vocal, breathy and clear, singing in Mandarin. The arrangement begins with a sparse guqin intro, builds into an emotional chorus, drops to a quiet bridge, and fades out with lingering dizi notes.</code></pre>
+<h3 id="lyrics结构标记-zh-音素行">6.2 Lyrics（结构标记 +
+<code>[zh]</code> 音素行）</h3>
+<pre><code>[Intro]
+
+[Verse 1]
+[zh] qing1 shan1 yin3 yin3 shui3 lian2 tian1
+[zh] yi2 ye4 pian1 zhou1 du4 yuan3 chuan1
+[zh] shui2 jia1 yu4 di2 nong4 ye4 se4
+[zh] chui1 luo4 mei2 hua1 man3 xiu4 bian1
+[Pre-Chorus]
+[zh] jiu4 meng4 ru2 yan1
+[zh] sui2 feng1 zhan3 zhuan3
+[zh] yi1 cun4 xiang1 si1
+[zh] fu4 yu3 dong1 liu2 de5 xiao3 chuan2
+[Chorus]
+[zh] ling2 xi1 ya5  ling2 xi1
+[zh] xiang1 feng2 he2 bi4 wen4 liu2 nian2
+[zh] yi1 qu1 qing1 ge1 chang4 ba4
+[zh] ren2 jian1 de5 ju4 san4  dou1 hua4 zuo4 yun2 yan1
+[zh] ling2 xi1 ya5  ling2 xi1
+[zh] ci3 qu4 jing1 nian2 zai4 xiang1 jian4
+[zh] qie3 jiang1 zhe4 bei1 zhong1 yue4
+[zh] yin3 jin3 zai4 jin1 ye4  bu4 wen4 ming2 tian1
+[Verse 2]
+[zh] gu3 dao4 xi1 feng1 you4 yi1 nian2
+[zh] gu4 ren2 he2 chu4 yi3 lan2 gan1
+[zh] yan4 zi4 hui2 shi2 shuang1 man3 xiu4
+[zh] yi1 zhi3 jia1 shu1 ji4 yuan3 shan1
+[Bridge]
+[zh] zong4 you3 qian1 ban1  wan4 ban1 de5 liu2 lian4
+[zh] ye3 di3 bu4 guo4  sui4 yue4 de5 bian4 qian1
+[zh] jiu4 rang4 ge1 sheng1  sui2 jiang1 shui3 dong1 qu4
+[zh] dai4 zou3 wo3  wu2 jin4 de5 gua4 qian1
+[Outro]
+[zh] jiang1 shui3 dong1 liu2 qu4 wu2 yan2
+[zh] yi1 lun2 ming2 yue4 zhao4 ren2 jian1
+[zh] ling2 xi1 de5 ming2 zi4
+[zh] sui2 feng1  piao1 yuan3</code></pre>
+<p>对应汉字原文（便于理解与校对，不写入 lyrics 字段）：</p>
+<blockquote>
+<p>青山隐隐水连天 / 一叶扁舟渡远川 / 谁家玉笛弄夜色 / 吹落梅花满袖边
+旧梦如烟 / 随风辗转 / 一寸相思 / 付与东流的小船 泠汐呀 泠汐 /
+相逢何必问流年 / 一曲清歌唱罢 / 人间的聚散 都化作云烟 泠汐呀 泠汐 /
+此去经年再相见 / 且将这杯中月 / 饮尽在今夜 不问明天 古道西风又一年 /
+故人何处倚栏杆 / 雁字回时霜满袖 / 一纸家书寄远山 纵有千般 万般的留恋 /
+也抵不过 岁月的变迁 / 就让歌声 随江水东去 / 带走我 无尽的挂牵
+江水东流去无言 / 一轮明月照人间 / 泠汐的名字 / 随风 飘远</p>
+</blockquote>
+<h3 id="参数text2music参考音色用-multipart-上传">6.3
+参数（text2music，参考音色用 multipart 上传）</h3>
+<div class="sourceCode" id="cb5"><pre
+class="sourceCode json"><code class="sourceCode json"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">{</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;task_type&quot;</span><span class="fu">:</span> <span class="st">&quot;text2music&quot;</span><span class="fu">,</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;caption&quot;</span><span class="fu">:</span> <span class="st">&quot;&lt;见 6.1&gt;&quot;</span><span class="fu">,</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;lyrics&quot;</span><span class="fu">:</span> <span class="st">&quot;&lt;见 6.2&gt;&quot;</span><span class="fu">,</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;vocal_language&quot;</span><span class="fu">:</span> <span class="st">&quot;zh&quot;</span><span class="fu">,</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;bpm&quot;</span><span class="fu">:</span> <span class="dv">72</span><span class="fu">,</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;keyscale&quot;</span><span class="fu">:</span> <span class="st">&quot;D minor&quot;</span><span class="fu">,</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;timesignature&quot;</span><span class="fu">:</span> <span class="st">&quot;4/4&quot;</span><span class="fu">,</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;audio_duration&quot;</span><span class="fu">:</span> <span class="dv">240</span><span class="fu">,</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="dt">&quot;thinking&quot;</span><span class="fu">:</span> <span class="kw">false</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">}</span></span></code></pre></div>
+<ul>
+<li><code>audio_duration</code> 显式给 <strong>240
+秒</strong>，绕开偏短的自动估算。</li>
+<li><code>bpm=72</code>（慢板）配合古风情绪，与 caption 的 slow tempo
+一致。</li>
+<li><code>reference_audio</code> 以 multipart
+文件字段上传（本地文件走上传，非路径）。</li>
+<li>批量 <code>batch_size</code> 取 2–4。</li>
+</ul>
+<hr />
+<h2 id="七套用清单checklist">七、套用清单（Checklist）</h2>
+<p>写每一次生成前逐条核对：</p>
+<ul class="task-list">
+<li><label><input
+type="checkbox" />歌词结构标记齐全，一段一标记，组合用连字符不堆叠</label></li>
+<li><label><input type="checkbox" />中文歌词逐行做 <code>[zh]</code>
+带声调拼音，英文仅用于语气词与标记</label></li>
+<li><label><input type="checkbox" />每行 6–10
+音节，按语义断行</label></li>
+<li><label><input type="checkbox" />Caption
+覆盖七维度，具体优于模糊，无冲突词</label></li>
+<li><label><input type="checkbox" />Caption 情绪与 Lyrics
+结构标记一致</label></li>
+<li><label><input type="checkbox" /><code>audio_duration</code>
+显式指定，完整结构给 210–270 秒</label></li>
+<li><label><input
+type="checkbox" />音乐元数据（bpm/keyscale/timesignature/vocal_language）与
+caption 匹配</label></li>
+<li><label><input type="checkbox" />参考音频以 multipart
+上传；生成后核对成品实际时长与咬字</label></li>
+</ul>
+<hr />
+<p><em>文档依据 ACE-Step 1.5
+仓库示例与中文教程核实，公式为本地代码实际实现。所引经验值来自官方
+songwriting 指南与 200 个 text2music 样本。</em></p>
+
+        </main>
+        <footer class="footer">
+            <p>本报告由 AI 自动生成</p>
+        </footer>
+    </div>
+
+
+</body>
+</html>
