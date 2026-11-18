@@ -457,20 +457,21 @@ def do_cover(
     adv_json="",
     progress=gr.Progress(track_tqdm=False),
 ):
-    """上传参考音频并提交任务，轮询完成后下载成品。
+    """提交任务并轮询完成后下载成品（参考音频可选）。
 
-    可控模式(text2music+ref_audio)：audio_duration 生效；可选按歌词自动估算时长。
-    cover 模式：保持旧行为，成品时长=参考音频时长。
+    未上传参考音频：纯 text2music 默认生成，请求不带文件字段，audio_duration 生效。
+    可控模式(text2music+ref_audio)：上传参考音频作音色 conditioning，audio_duration 生效；可选按歌词自动估算时长。
+    cover 模式：保持旧行为，成品时长=参考音频时长（必须上传参考音频）。
     """
     if requests is None:
         return None, None, "错误：缺少 requests 库。"
     ok, info = _health()
     if not ok:
         return None, None, "错误：API Server 未就绪。" + info
-    if not src_audio:
-        return None, None, "错误：请先上传参考音频。"
-
-    controlled = (mode != MODE_COVER)
+    # 参考音频改为可选：上传走音色跟随，未上传走纯 text2music 默认生成。
+    has_ref = bool(src_audio) and os.path.isfile(str(src_audio))
+    # 无参考音频时强制可控 text2music（cover 任务必须有参考音频，不能降级为无文件）
+    controlled = (mode != MODE_COVER) or not has_ref
     est = infer_duration_from_lyrics(lyrics)
     if controlled:
         final_duration = max(int(audio_duration), est) if auto_duration else int(audio_duration)
@@ -487,8 +488,12 @@ def do_cover(
             "seed": str(int(seed)) if seed is not None else "-1",
             "batch_size": "1",
         }
-        file_field = "ref_audio"  # multipart 映射 reference_audio_path（音色 conditioning）
-        note = f"音色演唱模式 · 歌词估算 {est}s · 实际时长 {final_duration}s"
+        if has_ref:
+            file_field = "ref_audio"  # 有参考：multipart 映射 reference_audio_path（音色 conditioning）
+            note = f"音色演唱模式 · 歌词估算 {est}s · 实际时长 {final_duration}s"
+        else:
+            file_field = None  # 无参考：纯 text2music 默认生成，请求不带任何文件字段
+            note = f"默认生成（未上传参考音频）· 歌词估算 {est}s · 实际时长 {final_duration}s"
     else:
         final_duration = int(audio_duration)
         # cover 属 DIRECT_CONDITIONING_TASKS：服务端忽略 audio_duration，成品时长=参考音频
@@ -517,9 +522,13 @@ def do_cover(
 
     try:
         progress(0.05, desc="提交任务…")
-        with open(src_audio, "rb") as fh:
-            files = {file_field: (os.path.basename(src_audio), fh, "audio/wav")}
-            resp = requests.post(API_BASE + "/release_task", data=data, files=files, timeout=120)
+        if file_field:
+            with open(src_audio, "rb") as fh:
+                files = {file_field: (os.path.basename(src_audio), fh, "audio/wav")}
+                resp = requests.post(API_BASE + "/release_task", data=data, files=files, timeout=120)
+        else:
+            # 未上传参考音频：纯 text2music，请求不带任何文件字段（服务端已实测支持）
+            resp = requests.post(API_BASE + "/release_task", data=data, timeout=120)
         resp.raise_for_status()
         jd = resp.json()
         if jd.get("code") not in (200, 0):
@@ -588,6 +597,8 @@ def build_acestep_cover_tab():
         "### ACE-Step 1.5 · 音色跟随 / 时长可控演唱\n"
         "上传一段参考音频作为音色参考，让 ACE-Step 按提示词与歌词端到端出成品，"
         "无多阶段拼接的机械音。所有计算在本机完成，数据不出本机。\n\n"
+        "**参考音频可选**：上传则走音色跟随（人声/音色）；不上传则直接按提示词+歌词走 "
+        "`text2music` 默认生成，不再要求必须上传参考音频。\n\n"
         "**生成模式**：\n"
         "- **音色演唱（时长可控·推荐）**：`text2music` + 参考音频作音色 conditioning + 显式时长。"
         "成品时长由下方「时长」决定（或按歌词自动估算），**长歌词可完整唱完**，不再恒等于参考音频长度。\n"
@@ -609,7 +620,7 @@ def build_acestep_cover_tab():
                 choices=[MODE_CONTROLLED, MODE_COVER],
                 value=MODE_CONTROLLED,
             )
-            src = gr.Audio(label="参考音频（音色参考）", type="filepath")
+            src = gr.Audio(label="参考音频（音色参考·可选；不上传则走纯 text2music 默认生成）", type="filepath")
             prompt = gr.Textbox(
                 label="风格提示词 prompt",
                 value="warm emotional Mandarin pop ballad, female vocal, gentle piano and strings, clean studio recording",
